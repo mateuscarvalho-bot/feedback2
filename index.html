@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Estudos ENARE</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Tab: Início -->
+        <div class="tab-content" id="tab-inicio">
+            <div class="container">
+                <h1>Dashboard de Estudos</h1>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total de Estudos</h3>
+                        <div class="stat-value" id="totalStudies">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Aproveitamento Médio</h3>
+                        <div class="stat-value" id="averageScore">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Melhor Disciplina</h3>
+                        <div class="stat-value" id="bestSubject">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Questões Resolvidas</h3>
+                        <div class="stat-value" id="totalQuestions">0</div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-container" style="position: relative; height: 400px;">
+                        <h3>Performance por Disciplina</h3>
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                    <div class="chart-container" style="position: relative; height: 400px;">
+                        <h3>Evolução Temporal</h3>
+                        <canvas id="evolutionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Estudar -->
+        <div class="tab-content hidden" id="tab-estudar">
+            <div class="container">
+                <h1>Registrar Estudo</h1>
+                
+                <form id="studyForm" class="study-form">
+                    <div class="form-group">
+                        <label class="form-label" for="subject">Disciplina</label>
+                        <select class="form-control" id="subject" required>
+                            <option value="">Selecione uma disciplina</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="correct">Questões Certas</label>
+                            <input type="number" class="form-control" id="correct" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="total">Total de Questões</label>
+                            <input type="number" class="form-control" id="total" min="1" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="topic">Assunto</label>
+                        <select class="form-control" id="topic" required>
+                            <option value="">Selecione primeiro uma disciplina</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="customTopicGroup" style="display: none;">
+                        <label class="form-label" for="customTopic">Assunto Personalizado</label>
+                        <input type="text" class="form-control" id="customTopic" placeholder="Digite o assunto">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="date">Data da Realização</label>
+                        <input type="date" class="form-control" id="date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="observations">Observações</label>
+                        <textarea class="form-control" id="observations" rows="3" placeholder="Adicione observações sobre seu estudo..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn--primary btn--full-width">Registrar Estudo</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tab: Cronograma -->
+        <div class="tab-content hidden" id="tab-cronograma">
+            <div class="container">
+                <h1>Cronograma de Revisões</h1>
+                
+                <div class="schedule-controls">
+                    <button class="btn btn--secondary" id="updateSchedule">Atualizar Cronograma</button>
+                </div>
+
+                <div class="schedule-list" id="scheduleList">
+                    <!-- Schedule items will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Histórico -->
+        <div class="tab-content hidden" id="tab-historico">
+            <div class="container">
+                <h1>Histórico de Estudos</h1>
+                
+                <div class="history-filters">
+                    <div class="form-group">
+                        <label class="form-label" for="filterSubject">Filtrar por Disciplina</label>
+                        <select class="form-control" id="filterSubject">
+                            <option value="">Todas as disciplinas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="filterTopic">Filtrar por Assunto</label>
+                        <select class="form-control" id="filterTopic">
+                            <option value="">Todos os assuntos</option>
+                        </select>
+                    </div>
+                    <button class="btn btn--secondary" id="clearFilters">Limpar Filtros</button>
+                </div>
+
+                <div class="history-list" id="historyList">
+                    <!-- History items will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Configurações -->
+        <div class="tab-content hidden" id="tab-configuracoes">
+            <div class="container">
+                <h1>Configurações</h1>
+                
+                <div class="settings-sections">
+                    <div class="settings-section">
+                        <h2>Dados</h2>
+                        <div class="settings-buttons">
+                            <button class="btn btn--secondary" id="exportBtn">Exportar Dados</button>
+                            <button class="btn btn--secondary" id="importBtn">Importar Dados</button>
+                            <input type="file" id="importFile" accept=".json" style="display: none;">
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h2>Disciplinas</h2>
+                        <div class="disciplines-manager">
+                            <button class="btn btn--primary" id="addDisciplineBtn">Adicionar Nova Disciplina</button>
+                            <div class="disciplines-list" id="disciplinesList">
+                                <!-- Disciplines will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h2>Sobre</h2>
+                        <div class="about-info">
+                            <p><strong>Sistema de Estudos ENARE</strong></p>
+                            <p>Versão: 2.0</p>
+                            <p>Aplicativo para gerenciamento e acompanhamento de estudos médicos.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="#" class="bottom-nav-item active" data-tab="inicio">
+            <span class="bottom-nav-icon">🏠</span>
+            <span class="bottom-nav-text">Início</span>
+        </a>
+        <a href="#" class="bottom-nav-item" data-tab="estudar">
+            <span class="bottom-nav-icon">📚</span>
+            <span class="bottom-nav-text">Estudar</span>
+        </a>
+        <a href="#" class="bottom-nav-item" data-tab="cronograma">
+            <span class="bottom-nav-icon">📅</span>
+            <span class="bottom-nav-text">Cronograma</span>
+        </a>
+        <a href="#" class="bottom-nav-item" data-tab="historico">
+            <span class="bottom-nav-icon">📊</span>
+            <span class="bottom-nav-text">Histórico</span>
+        </a>
+        <a href="#" class="bottom-nav-item" data-tab="configuracoes">
+            <span class="bottom-nav-icon">⚙️</span>
+            <span class="bottom-nav-text">Configurações</span>
+        </a>
+    </nav>
+
+    <!-- Modal for Adding Discipline -->
+    <div class="modal hidden" id="disciplineModal">
+        <div class="modal-overlay" id="disciplineModalOverlay"></div>
+        <div class="modal-content">
+            <h3>Adicionar Nova Disciplina</h3>
+            <form id="disciplineForm">
+                <div class="form-group">
+                    <label class="form-label" for="disciplineName">Nome da Disciplina</label>
+                    <input type="text" class="form-control" id="disciplineName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="disciplineSpecialty">Especialidade</label>
+                    <select class="form-control" id="disciplineSpecialty" required>
+                        <option value="">Selecione uma especialidade</option>
+                        <option value="Clínica">Clínica</option>
+                        <option value="Cirúrgica">Cirúrgica</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="disciplineTopics">Assuntos (separados por vírgula)</label>
+                    <textarea class="form-control" id="disciplineTopics" rows="3" placeholder="Ex: Assunto 1, Assunto 2, Assunto 3" required></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn--secondary" id="cancelDisciplineBtn">Cancelar</button>
+                    <button type="submit" class="btn btn--primary">Adicionar Disciplina</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
